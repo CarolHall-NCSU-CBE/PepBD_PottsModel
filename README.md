@@ -36,7 +36,9 @@ An example is provided in `ExampleInputs` of the repository
 - WEIGHTING_FACTOR (default=0.01): Factor that multiplies peptide-peptide interactions when calculating the PepBD score
   
 ## sys.pdb
-Contains the peptide-receptor complex. Since PepBD_Potts takes longer to run as the system size increases, receptor atoms that are 10 Angstroms from the peptide are typically removed, e.g. using VMD. sys.pdb should be formatted such that
+Contains the peptide-receptor complex. An example is provided in `ExampleInputs` of the repository.
+
+Since PepBD_Potts takes longer to run as the system size increases, receptor atoms that are 10 Angstroms from the peptide are typically removed, e.g. using VMD. sys.pdb should be formatted such that
 
 - Only lines for atomic coordinates remain
 - The peptide appears first, followed by the receptor
