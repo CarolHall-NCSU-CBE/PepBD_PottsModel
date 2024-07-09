@@ -1,62 +1,42 @@
-# PepBD_PottsModel
+# Description
 
-REQUIRED FILES FOR RUNNING PROGRAM
+PepBD_PottsModel is a Fortran program that expresses peptide affinity for a receptor as a function of one- and two-body energies. Used to find the optimal amino acid sequence for a fixed system conformation. 
 
-The following files are required to run PepBD. Each is described in more detail below. All files should be placed in the directory for running PepBD, unless otherwise noted.
+# Required input files
+Details on files are provided below
 
-- all Fortran 90 files
-- input.txt (details provided below)
-- a pdb file of the peptide-receptor (details provided below)
-- the uncompressed lib folder
+- compiled executable
+- input.txt
+- sys.pdb
+- the lib folder, placed at the location ~/PepBD/
 
-REQUIRED PEPBD FILE - INPUT FILE
+# Installation and Compilation
+Requirements: Intel ifort compiler (tested on versions 2017 - 2024)
 
-The name of this file must be "input.txt". An example input file is provided in the repository. The variables that can be specified in the input file are the following:
+1. Navigate to the `src` directory
+2. Run the command `bash ../compile.sh`
 
-- PDBFILE (required): the name of the pdb file containing the peptide-receptor complex
-- LIB_PATH (required): path to the lib folder
+# Running PepBD_PottsModel
+Run from the terminal using `{PATH_TO_src}/main`. `input.txt` and `sys.pdb` must be in the same directory where the command is run.
+The run time usually takes a few minutes. 
+
+# Outputs of PepBD_PottsModel
+1. `SingleEnergy.txt`: contains the one-body energy of each amino acid type at each location in the peptide.
+2. `PairwiseEnergy.txt`: contains the two-body energy of all possible amino acid pairs at all possible locations in the peptide
+
+# Details on required input files
+
+## input.txt
+An example is provided in `ExampleInputs` of the repository
+
+- PDBFILE (required): the name of the pdb file containing the peptide-receptor complex. Usually `sys.pdb`.
+- LIB_PATH (required): path to the lib folder. Usually `~/PepBD/`.
 - PEP_RES (required): Number of residues in the peptide.
-- RECEPTOR_NAME (required): Type of receptor. Options are nucleic, peptide, or molecule
-- SOLVATION_FLAG (default=0): Either 0 or 1; if 1, then will include generalizd Born (GB) solvation energy in one- and two-body energy calculations
+- RECEPTOR_NAME (required): Type of receptor. Options are nucleic, peptide, or molecule. Use molecule for designing plastic-binding peptides
 - WEIGHTING_FACTOR (default=0.01): Factor that multiplies peptide-peptide interactions when calculating the PepBD score
-- CG_RBORN (default=3.0): radius of bead placed at beta-carbon when calculating GB solvation energy (see paper for details on this)
+  
+## sys.pdb
+Contains the peptide-receptor complex. Since PepBD_Potts takes longer to run as the system size increases, receptor atoms that are 10 Angstroms from the peptide are typically removed, e.g. using VMD. sys.pdb should be formatted such that
 
-REQUIRED PEPBD FILE - SYSTEM PDB FILE
-
-Contains the peptide-receptor complex. Since PepBD runs slower as the system size increases, receptor atoms that are far from the peptide are removed from the pdb file. Common cutoff distances used are 8-10 Angstroms.
-
-After reducing the system size, prepare the pdb file so it can be understood by PepBD by doing the following
-
-Remove any lines that do not have atomic coordinates, including TER and END
-If needed, reorder the atoms so the peptide appears first in the file, then is followed by the receptor
-If this is done, then fix the residue and atom numbering to match the new order. The tleap Amber of module is useful for this.
-
-An example pdb file is provided in the repository.
-
-PROGRAM COMPILATION
-
-The intel compiler needs to be used (issues may occur if the program is compiled with gfortran). To compile, run the below lines:
-
-ifort -c -O2 datatypes.f90
-ifort -c -O2 sys_vars.f90
-ifort -c -O2 input.f90
-ifort -c -O2 math.f90
-ifort -c -O2 utilities.f90
-ifort -c -O2 pdbfile.f90
-ifort -c -O2 database.f90 
-ifort -c -O2 surface_area.f90
-ifort -c -O2 energy_calculation.f90
-ifort -c -O2 advanced_function.f90
-ifort -c -O2 optimization_techniques.f90
-ifort -c -O2 EvalEnergies.f90
-ifort -O2 -o main *.o -mkl=sequential
-
-GENERATED DATA FILES
-The outputs from PepBD are the following: 
-
-- SingleEnergy.txt: ontains the one-body energy for each amino acid at each peptide residue.
-	- An example is provided in the repository
-
-- PairwiseEnergy.txt: contains the two-body energy between all possible amino acid pairs at all possible positions in the peptide.
-	- An example is provided in the repository
- 	- Note that the energies in this file are scaled by WEIGHTING_FACTOR specified in input.txt
+- Only lines for atomic coordinates remain
+- The peptide appears first, followed by the receptor
